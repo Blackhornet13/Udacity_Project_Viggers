@@ -2,9 +2,9 @@ import time
 import pandas as pd
 import numpy as np
 
-CITY_DATA = { 'chicago': 'chicago.csv',
-              'new york city': 'new_york_city.csv',
-              'washington': 'washington.csv' }
+CITY_DATA = { 'Chicago': 'chicago.csv',
+              'New York City': 'new_york_city.csv',
+              'Washington': 'washington.csv' }
 
 def get_filters():
     """
@@ -17,28 +17,24 @@ def get_filters():
     """
     print('Hello! Let\'s explore some US bikeshare data!')
     # TO DO: get user input for city (chicago, new york city, washington). HINT: Use a while loop to handle invalid inputs
-    city = str(input('Which city would you like to search: chicago, new york, or washington?\n'))
+    city_list = ["Chicago", "New York City", "Washignton"]
+    city =str(input('Which city would you like to search: "Chicago", "New York City", "Washignton" \n'))
+    while city not in {"Chicago", "New York City", "Washignton"}:
+        city = input("Please enter a valid input (check spacing & Caps): ")
 
-    # TO DO: get user input for month (all, january, february, ... , june)
-    month = str(input('Which month would you like to filter to: january, february, march, april, may, june, or all?\n'))
+    month_list = ["january", "february", "march", "april", "may", "june", "all"]
+    month = str(input('Which month would you like to filter to: "january", "february", "march", "april", "may", "june", "all"\n'))
+    while month not in {"january", "february", "march", "april", "may", "june", "all"}:
+        month = input("Please enter a valid input (check spacing & Caps): ")
 
-    # TO DO: get user input for day of week (all, monday, tuesday, ... sunday)
-    day = str(input('Which day of the week would you like to filter to: Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday or all?\n'))
-    df = pd.read_csv(CITY_DATA[city])
-    df ['Start Time'] = pd.to_datetime(df['Start Time'])
-    df ['month'] = df['Start Time'].dt.month
-    df ['day_of_week'] = df['Start Time'].dt.dayofweek.name
-
-    if month!= 'all':
-        months = ['all','january', 'february', 'march', 'april', 'may', 'june']
-        month = months.index(month)+1
-        df = df[df['month'] == month]
-    if day != 'all':
-        df = df[df['day_of_week'] ==day.title()]
-    return df
+    day_list = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "all"]
+    day = str(input('Which day of the week would you like to filter to: "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "all" \n'))
+    while day not in {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "all"}:
+        day = input("Please enter a valid input (check spacing & Caps): ")
 
     print('-'*40)
     return city, month, day
+
 
 
 def load_data(city, month, day):
@@ -53,7 +49,17 @@ def load_data(city, month, day):
         df - Pandas DataFrame containing city data filtered by month and day
     """
 
+    df = pd.read_csv(CITY_DATA[city])
+    df ['Start Time'] = pd.to_datetime(df['Start Time'])
+    df ['month'] = df['Start Time'].dt.month
+    df ['day_of_week'] = df['Start Time'].dt.dayofweek.name
 
+    if month != 'all':
+        months = ['january', 'february', 'march', 'april', 'may', 'june']
+        month = months.index(month) + 1
+        df = df[df['month'] == month]
+    if day != 'all':
+        df = df[df['day_of_week'] ==day.title()]
     return df
 
 
@@ -144,11 +150,11 @@ def user_stats(df):
     start_time = time.time()
 
     # TO DO: Display counts of user types
-    user_types = df['User Type'].value_counts()
+    user_types = df['User Type'].fillna("No data given").value_counts()
     print("User Types and Counts: {}".format(user_types))
 
     # TO DO: Display counts of gender
-    user_gender = df['Gender'].value_counts()
+    user_gender = df['Gender'].fillna("No data given").value_counts()
     print("User Genders and Counts: {}".format(user_gender))
 
 
@@ -156,7 +162,7 @@ def user_stats(df):
     birthdays = df['Birth Year']
     print("Earliest Birthyear: {}".format(min(birthdays)))
     print("Most Recent Birthyear: {}".format(max(birthdays)))
-    print("Most Common Birthyear: {}".format(birthdays.max))
+    print("Most Common Birthyear: {}".format(birthdays.mode()[0]))
 
 
     print("\nThis took %s seconds." % (time.time() - start_time))
